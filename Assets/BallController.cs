@@ -30,13 +30,13 @@ public class BallController : MonoBehaviour
             _ballPhysic.Velocity.y = 0;
 
             // ******************* Forward move
-            _ballPhysic.AddForce(Vector3.forward * Force.z);
+            _ballPhysic.Velocity.z = Force.z;
         }
         else
         {
             //_ballPhysic.Velocity.z-= _ballPhysic.Velocity.z*AirResistent*Time.deltaTime;
-            _ballPhysic.Velocity.y = Mathf.Min(_ballPhysic.Velocity.y ,- _ballPhysic.Velocity.z);
-            _ballPhysic.Velocity.z = 0;
+            //_ballPhysic.Velocity.y = Mathf.Min(_ballPhysic.Velocity.y ,- _ballPhysic.Velocity.z);
+            //_ballPhysic.Velocity.z = 0;
             _ballPhysic.AddForce(Vector3.down * Force.y);
         }
 

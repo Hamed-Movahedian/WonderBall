@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JumpTest : MonoBehaviour
+public class GroundZone : MonoBehaviour
 {
-    public Vector3 Force=new Vector3(0,100,0);
+    public Vector3 Velocity = new Vector3(0, -20, 0);
 
     private void OnTriggerEnter(Collider other)
     {
         var ballPhysic = other.gameObject.GetComponent<BallPhysic>();
         if (ballPhysic != null)
         {
-            ballPhysic.AddForce(Force);
-            print("Enter jump");
+            ballPhysic.Velocity = new Vector3(0,-ballPhysic.Velocity.magnitude,0);
         }
     }
 

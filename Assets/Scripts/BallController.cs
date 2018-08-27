@@ -4,6 +4,22 @@ using UnityEngine;
 
 public class BallController : MonoBehaviour
 {
+    #region Instance
+
+    private static BallController _instance;
+
+    public static BallController Instance
+    {
+        get
+        {
+            if (_instance == null)
+                _instance = FindObjectOfType<BallController>();
+            return _instance;
+        }
+    }
+
+    #endregion
+
     public float Radious = 1;
     public Vector3 Force = new Vector3(50, 100, 100);
     public LayerMask Mask;

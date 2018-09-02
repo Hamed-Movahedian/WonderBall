@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.ComponentModel;
+using UnityEngine;
 
 internal class PathGizmo
 {
@@ -10,6 +11,7 @@ internal class PathGizmo
         _jumpBlock = jumpBlock;
     }
 
+    [Description("test")]
     public void DrawPath(Vector3 startPos, Vector3 endPos, float radious)
     {
         Vector3 lastPos = startPos;
@@ -20,9 +22,13 @@ internal class PathGizmo
         {
             value += delta;
 
+            // set position
             Vector3 pos = Vector3.Lerp(startPos, endPos, value);
+
+            // set height
             pos.y += _jumpBlock.HeightCurve.Evaluate(value) * _jumpBlock.Height;
 
+            // set spin
             float spin = _jumpBlock.SpinCurve.Evaluate(value);
 
             DrawLine(lastPos,  pos, spin,radious);
@@ -36,10 +42,10 @@ internal class PathGizmo
         if (radious>0.1)
         {
             Gizmos.color=Color.grey;
+
             Vector3 v = Quaternion.AngleAxis(spin * 360, Vector3.forward) * Vector3.right * radious;
-            Gizmos.DrawLine(
-                pos+ v,
-                pos- v
+
+            Gizmos.DrawLine(pos+ v,pos- v
             );
         }
         else

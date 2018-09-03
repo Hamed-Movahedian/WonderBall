@@ -9,6 +9,7 @@ public class GizmoTest : MonoBehaviour
     public AnimationCurve HeightCurve;
     public AnimationCurve RotationCurve;
     public float Height = 4;
+    public float Spin = 360;
     public GameObject Target;
     [Range(0,1)]
     public float Value;
@@ -37,13 +38,21 @@ public class GizmoTest : MonoBehaviour
 
     private void OnValidate()
     {
-        Target.transform.position= new Vector3(Vector3.Lerp(Start.transform.position, End.transform.position, Value).x
-            , Vector3.Lerp(Start.transform.position, End.transform.position, Value).y+HeightCurve.Evaluate(Value)*Height
-            , Vector3.Lerp(Start.transform.position, End.transform.position, Value).z);
+        Vector3 pos = GetPos(Value);
+        Vector3 lastPos = GetPos(Value - 0.1f);
 
+        Target.transform.position = pos;
 
+        Target.transform.rotation =
+            Quaternion.AngleAxis(RotationCurve.Evaluate(Value) * Spin, pos - lastPos)*
+            Quaternion.LookRotation(pos-lastPos);
     }
 
+    private Vector3 GetPos(float value)
+    {
+        var pos = Vector3.Lerp(Start.transform.position, End.transform.position, value);
 
-
+        pos.y += HeightCurve.Evaluate(value) * Height;
+        return pos;
+    }
 }

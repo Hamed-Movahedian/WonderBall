@@ -1,52 +1,83 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Blocks;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class JumpBlock : Block
 {
-    public AnimationCurve HeightCurve=AnimationCurve.Linear(0,0,1,0);
-    public AnimationCurve SpinCurve= AnimationCurve.Linear(0, 0, 1,1);
-    public int Distance = 4;
-    public float Height = 3;
-    public float Speed = 10;
+    public Transform PlaceHolder;
+    public Animator Animator;
+    private bool _isPlaying=false;
 
+    private void OnTriggerEnter(Collider other)
 
-    private PathGizmo _pathGizmo;
-
-    private void OnDrawGizmos()
     {
-        DrawGizmos(0);
-    }
-    private void OnDrawGizmosSelected()
-    {
-        DrawGizmos(0.4f);
+        if (_isPlaying == false)
+            StartCoroutine(JumpCoroutine());
+
     }
 
-
-    private void DrawGizmos(float radious)
+    private IEnumerator JumpCoroutine()
     {
-        if (_pathGizmo == null)
-            _pathGizmo = new PathGizmo(this);
+        // play animation
+        _isPlaying = true;
+        Animator.SetTrigger("Run");
 
-        if (BallController.Instance == null)
-            throw new Exception("Ball controller not found !!!");
+        // pass a frame
+        yield return null;
+        yield return null;
+        
+        // disable player forward movement
+        PlayerController.Instance.ForwardPlayerController.enabled = false;
+
+        // save player rotation
+        var playerRotation = PlayerController.Instance.ModleTransform.rotation;
+
+        // save z delta
+        var zDelta = PlayerController.Instance.transform.position.z - PlaceHolder.position.z;
 
 
-        float z = transform.position.z + Distance;
 
-        for (int x = -3; x <= 3; x++)
-            if (IsBlockIn(x, z))
-                _pathGizmo.DrawPath(transform.position, new Vector3(x, 0, z), radious);
+        // ****************  Set player position and rotation during play time
+        var playerTransform = PlayerController.Instance.transform;
+        while (_isPlaying)
+        {
+            // set player position
+            var playerPos = playerTransform.position;
+
+            playerPos.y = PlaceHolder.position.y;
+            playerPos.z = PlaceHolder.position.z + zDelta;
+
+            playerTransform.position = playerPos;
+
+            // set player rotation
+            //PlayerController.Instance.ModleTransform.rotation = PlaceHolder.rotation;
+
+            yield return null;
+        }
+
+        // enable player forward movement
+        PlayerController.Instance.ForwardPlayerController.enabled = true;
+
+        // set player previous rotation
+        PlayerController.Instance.ModleTransform.rotation = playerRotation;
+
+    }
+    public void EndPlay()
+    {
+        _isPlaying = false;
     }
 
-    private bool IsBlockIn(int x, float z)
+    private void Update()
     {
-        return Physics.Raycast(
-            new Vector3(x, 10, z), 
-            Vector3.down,
-            100,
-            BallController.Instance.Mask
-            );
+        if (!Application.isPlaying)
+        {
+            PlayerController.Instance.transform.position = PlaceHolder.position;
+            PlayerController.Instance.ModleTransform.rotation = PlaceHolder.rotation;
+
+        }
     }
+
 }

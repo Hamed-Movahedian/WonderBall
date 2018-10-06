@@ -22,10 +22,22 @@ public class PlayerController : MonoBehaviour
     public PlayerHorizontalController PlayerHorizontalController;
     public ForwardPlayerController ForwardPlayerController;
     public Transform ModleTransform;
+    public GameObject DeadEffect;
 
 
     public bool IsPlayer(GameObject go)
     {
         return go == gameObject;
+    }
+
+    public void Explode(float delay)
+    {
+        ModleTransform.gameObject.SetActive(false);
+        DeadEffect.SetActive(true);
+
+        ForwardPlayerController.enabled=false;
+        PlayerHorizontalController.enabled=false;
+
+        GameController.Instance.Lose(delay);
     }
 }
